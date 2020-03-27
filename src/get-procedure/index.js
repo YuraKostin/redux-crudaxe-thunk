@@ -15,7 +15,7 @@ import { throwError } from '../throw-error';
  * @param {StateDefaults} stateDefaults
  * @returns {Procedure}
  */
-export const getProcedure = (moduleName, request, stateDefaults = {}) => {
+const getProcedure = (moduleName, request, stateDefaults = {}) => {
     const throwProcedureError = throwError('getProcedure');
 
     if (isEmpty(moduleName)) {
@@ -49,3 +49,5 @@ export const getProcedure = (moduleName, request, stateDefaults = {}) => {
         selectors,
     };
 };
+
+export default getProcedure;
