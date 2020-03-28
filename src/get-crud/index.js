@@ -3,7 +3,7 @@ import { isEmpty } from 'ramda';
 
 import { getAsyncAction } from '../get-async-action';
 import { throwError } from '../throw-error';
-import getProcedure from '../get-procedure';
+import { getProcedure } from '../get-procedure';
 
 /**
  *
@@ -14,7 +14,7 @@ import getProcedure from '../get-procedure';
  * @param {ConfigItem} [config.read]
  * @param {ConfigItem} [config.update]
  */
-const getCRUD = (moduleName, config) => {
+export const getCRUD = (moduleName, config) => {
     const throwCrudError = throwError('getCRUD');
     if (isEmpty(moduleName)) {
         throwCrudError('moduleName cannot be an empty string');
@@ -73,5 +73,3 @@ const getCRUD = (moduleName, config) => {
         reducer: combineReducers(reducersByOperation),
     };
 };
-
-export default getCRUD;
