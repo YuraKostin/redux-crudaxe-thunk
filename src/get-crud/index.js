@@ -48,14 +48,13 @@ export const getCRUD = (moduleName, config) => {
                 throwCrudError(`stateDefaults for ${key} should be an object`);
             }
 
-            const moduleNameByProcedure = `${moduleName}/${key}`;
-
             const {
                 actionCreatorsByType,
                 reducer,
                 selectors,
-            } = getProcedure(moduleNameByProcedure, request, stateDefaults);
+            } = getProcedure([moduleName, key], request, stateDefaults);
 
+            const moduleNameByProcedure = `${moduleName}/${key}`;
             accumulator.crud[key] = {
                 actionCreatorsByType,
                 request: getAsyncAction(moduleNameByProcedure, request),

@@ -19,7 +19,7 @@ export const getActionHandlers = (moduleName, stateDefaults) => {
 
         [createActionForActionType(RECEIVE)]: (_, payload) => ({
             data: payload,
-            error: getValueForError(false),
+            error: getValueForError(null),
             isInProcess: getValueForIsInProcess(false),
         }),
 

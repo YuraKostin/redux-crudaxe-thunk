@@ -1,4 +1,4 @@
-import { isEmpty } from 'ramda';
+import { isEmpty, join } from 'ramda';
 
 import { ACTIONS } from '../constants/action-types';
 import { getActionCreator } from '../get-action-creator';
@@ -10,16 +10,16 @@ import { throwError } from '../throw-error';
 
 /**
  *
- * @param {string} moduleName
+ * @param {Array} moduleNameParts
  * @param {function} request
  * @param {StateDefaults} stateDefaults
  * @returns {Procedure}
  */
-export const getProcedure = (moduleName, request, stateDefaults = {}) => {
+export const getProcedure = (moduleNameParts, request, stateDefaults = {}) => {
     const throwProcedureError = throwError('getProcedure');
 
-    if (isEmpty(moduleName)) {
-        throwProcedureError('moduleName cannot be an empty string');
+    if (isEmpty(moduleNameParts)) {
+        throwProcedureError('moduleNameParts cannot be an empty array');
     }
 
     if (typeof request !== 'function') {
@@ -30,15 +30,15 @@ export const getProcedure = (moduleName, request, stateDefaults = {}) => {
         throwProcedureError(`stateDefaults should be an object`);
     }
 
-    const actionHandlers = getActionHandlers(moduleName, stateDefaults);
+    const actionHandlers = getActionHandlers(join('/', moduleNameParts), stateDefaults);
     const initialState = getInitialState(stateDefaults);
     const reducer = getReducer({
         actionHandlersByActionType: actionHandlers,
         initialState,
     });
-    const selectors = getPureSelectorsForModuleState([moduleName], initialState);
+    const selectors = getPureSelectorsForModuleState(moduleNameParts, initialState);
     const actionCreatorsByType = ACTIONS.reduce((acc, actionType) => {
-        acc[actionType] = getActionCreator(moduleName, actionType);
+        acc[actionType] = getActionCreator(join('/', moduleNameParts), actionType);
 
         return acc;
     }, {});
