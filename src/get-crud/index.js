@@ -2,8 +2,9 @@ import { combineReducers } from 'redux';
 import { isEmpty } from 'ramda';
 
 import { getAsyncAction } from '../get-async-action';
-import { throwError } from '../throw-error';
 import { getProcedure } from '../get-procedure';
+import { throwError } from '../throw-error';
+import { isValidCrudConfigKey } from '../is-valid-crud-config-key';
 
 /**
  *
