@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:crud": "parcel build src/get-crud/index.js --out-dir dist --out-file get-crud.js",
     "build:procedure": "parcel build src/get-procedure/index.js --out-dir dist --out-file get-procedure.js",
-    "build": "parcel build src/index.js --out-dir dist --out-file crudaxe.js"
+    "build": "parcel build src/index.js --out-dir dist --out-file crudaxe.js --no-cache"
   },
   "main": "dist/crudaxe.js",
   "repository": {
