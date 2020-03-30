@@ -3,5 +3,4 @@
  * @property {*} [data]
  * @property {*} [error]
  * @property {boolean} [isInProcess]
- *
  */

@@ -1,19 +1,18 @@
 import { combineReducers } from 'redux';
 import { isEmpty } from 'ramda';
 
-import { getAsyncAction } from '../get-async-action';
 import { getProcedure } from '../get-procedure';
 import { throwError } from '../throw-error';
 import { isValidCrudConfigKey } from '../is-valid-crud-config-key';
 
 /**
- *
  * @param {string} moduleName
  * @param {Object} config
  * @param {ConfigItem} [config.create]
  * @param {ConfigItem} [config.delete]
  * @param {ConfigItem} [config.read]
  * @param {ConfigItem} [config.update]
+ * @returns {CRUD}
  */
 export const getCRUD = (moduleName, config) => {
     const throwCrudError = throwError('getCRUD');
@@ -37,7 +36,7 @@ export const getCRUD = (moduleName, config) => {
 
             const {
                 stateDefaults = {},
-                request,
+                requestFn,
             } = configuration;
 
             if (typeof request !== 'function') {
@@ -51,13 +50,15 @@ export const getCRUD = (moduleName, config) => {
             const {
                 actionCreatorsByType,
                 reducer,
+                request,
                 selectors,
-            } = getProcedure([moduleName, key], request, stateDefaults);
+            } = getProcedure([moduleName, key], requestFn, {
+                stateDefaults
+            });
 
-            const moduleNameByProcedure = `${moduleName}/${key}`;
             accumulator.crud[key] = {
                 actionCreatorsByType,
-                request: getAsyncAction(moduleNameByProcedure, request),
+                request,
                 selectors,
             };
             accumulator.reducersByOperation[key] = reducer;

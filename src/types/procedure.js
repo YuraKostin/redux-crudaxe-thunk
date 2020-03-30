@@ -1,22 +1,23 @@
 /**
- * @typedef {Object} Selector
+ * @typedef {Object} ProcedureSelectors
  * @property {function} data
  * @property {function} error
  * @property {function} isInProcess
- *
- */
-
-/**
- * @typedef {Object} Selectors
- * @property {Selector} [create]
- * @property {Selector} [delete]
- * @property {Selector} [read]
- * @property {Selector} [update]
  */
 
 /**
  * @typedef {Object} Procedure
  * @property {Object} actionCreatorsByType
  * @property {function} reducer
- * @property {Selectors} selectors
+ * @property {function} request
+ * @property {ProcedureSelectors} selectors
+ */
+
+/**
+ * @typedef {Object} CRUD
+ * @property {function} reducer
+ * @property {ProcedureSelectors} [create]
+ * @property {ProcedureSelectors} [delete]
+ * @property {ProcedureSelectors} [read]
+ * @property {ProcedureSelectors} [update]
  */

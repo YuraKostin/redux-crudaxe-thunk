@@ -1,25 +1,30 @@
-import { isEmpty, join } from 'ramda';
+import { isEmpty } from 'ramda';
 
-import { ACTIONS } from '../constants/action-types';
-import { getActionCreator } from '../get-action-creator';
+import { getActionCreatorsByType } from '../get-action-creators-by-type';
 import { getActionHandlers } from '../get-action-handlers';
+import { getAsyncAction } from '../get-async-action';
 import { getInitialState } from '../get-initial-state';
 import { getPureSelectorsForModuleState } from '../get-pure-selectors-for-module-state';
 import { getReducer } from '../get-reducer';
 import { throwError } from '../throw-error';
 
 /**
- *
- * @param {Array} moduleNameParts
+ * @param {string|Array<string>} moduleName
  * @param {function} request
- * @param {StateDefaults} stateDefaults
+ * @param {Object} options
+ * @param {StateDefaults} [options.stateDefaults]
  * @returns {Procedure}
  */
-export const getProcedure = (moduleNameParts, request, stateDefaults = {}) => {
+export const getProcedure = (moduleName, request, options = {}) => {
+    const {
+        stateDefaults = {},
+    } = options;
     const throwProcedureError = throwError('getProcedure');
+    const moduleNameArray = Array.isArray(moduleName) ? moduleName : [moduleName];
+    const moduleNameString = moduleName.join('/');
 
-    if (isEmpty(moduleNameParts)) {
-        throwProcedureError('moduleNameParts cannot be an empty array');
+    if (isEmpty(moduleNameString)) {
+        throwProcedureError('moduleName cannot be an empty');
     }
 
     if (typeof request !== 'function') {
@@ -30,22 +35,19 @@ export const getProcedure = (moduleNameParts, request, stateDefaults = {}) => {
         throwProcedureError(`stateDefaults should be an object`);
     }
 
-    const actionHandlers = getActionHandlers(join('/', moduleNameParts), stateDefaults);
+    const actionHandlers = getActionHandlers(moduleNameArray, stateDefaults);
     const initialState = getInitialState(stateDefaults);
     const reducer = getReducer({
         actionHandlersByActionType: actionHandlers,
         initialState,
     });
-    const selectors = getPureSelectorsForModuleState(moduleNameParts, initialState);
-    const actionCreatorsByType = ACTIONS.reduce((acc, actionType) => {
-        acc[actionType] = getActionCreator(join('/', moduleNameParts), actionType);
-
-        return acc;
-    }, {});
+    const selectors = getPureSelectorsForModuleState(moduleName, initialState);
+    const actionCreatorsByType = getActionCreatorsByType(moduleNameString);
 
     return {
         actionCreatorsByType,
         reducer,
+        request: getAsyncAction(moduleNameString, request),
         selectors,
     };
 };
