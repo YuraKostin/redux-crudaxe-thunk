@@ -21,7 +21,7 @@ export const getAsyncAction = (moduleName, request, sideEffects = {}) => data =>
         dispatch(createActionCreatorForType(ERROR)(error));
 
         if (typeof sideEffects.error === 'function') {
-            sideEffects.error(error);
+            sideEffects.error(error, dispatch);
         }
 
         return Promise.reject(error);
@@ -30,7 +30,7 @@ export const getAsyncAction = (moduleName, request, sideEffects = {}) => data =>
     dispatch(createActionCreatorForType(RECEIVE)(response));
 
     if (typeof sideEffects.data === 'function') {
-        sideEffects.data(response);
+        sideEffects.data(response, dispatch);
     }
 
     return Promise.resolve(response);
