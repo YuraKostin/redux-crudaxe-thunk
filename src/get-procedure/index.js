@@ -21,7 +21,7 @@ export const getProcedure = (moduleName, request, options = {}) => {
     } = options;
     const throwProcedureError = throwError('getProcedure');
     const moduleNameArray = Array.isArray(moduleName) ? moduleName : [moduleName];
-    const moduleNameString = moduleName.join('/');
+    const moduleNameString = moduleNameArray.join('/');
 
     if (isEmpty(moduleNameString)) {
         throwProcedureError('moduleName cannot be an empty');
