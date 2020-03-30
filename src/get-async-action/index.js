@@ -3,8 +3,15 @@ import { to } from 'await-to-js';
 import { getActionCreator } from '../get-action-creator';
 import { ERROR, RECEIVE, REQUEST } from '../constants/action-types';
 
-// Async action
-export const getAsyncAction = (moduleName, request) => data => async dispatch => {
+/**
+ * @param {string} moduleName
+ * @param {function} request
+ * @param {Object} sideEffects
+ * @param {function} sideEffects.data
+ * @param {function} sideEffects.error
+ * @return {function(*=): function(...[*]=)}
+ */
+export const getAsyncAction = (moduleName, request, sideEffects = {}) => data => async dispatch => {
     const createActionCreatorForType = getActionCreator(moduleName);
     dispatch(createActionCreatorForType(REQUEST)());
 
@@ -12,9 +19,19 @@ export const getAsyncAction = (moduleName, request) => data => async dispatch =>
 
     if (error) {
         dispatch(createActionCreatorForType(ERROR)(error));
+
+        if (typeof sideEffects.error === 'function') {
+            sideEffects.error(error);
+        }
+
         return Promise.reject(error);
     }
 
     dispatch(createActionCreatorForType(RECEIVE)(response));
+
+    if (typeof sideEffects.data === 'function') {
+        sideEffects.data(response);
+    }
+
     return Promise.resolve(response);
 };

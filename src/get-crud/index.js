@@ -5,6 +5,8 @@ import { getProcedure } from '../get-procedure';
 import { throwError } from '../throw-error';
 import { isValidCrudConfigKey } from '../is-valid-crud-config-key';
 
+const isObject = object => Object.prototype.toString.call(object) === '[object Object]';
+
 /**
  * @param {string} moduleName
  * @param {Object} config
@@ -16,36 +18,28 @@ import { isValidCrudConfigKey } from '../is-valid-crud-config-key';
  */
 export const getCRUD = (moduleName, config) => {
     const throwCrudError = throwError('getCRUD');
-    if (isEmpty(moduleName)) {
-        throwCrudError('moduleName cannot be an empty string');
-    }
 
-    if (Object.prototype.toString.call(config) !== '[object Object]') {
-        throwCrudError('config should be an object');
-    }
+    if (isEmpty(moduleName)) throwCrudError('moduleName cannot be an empty string');
 
-    if (isEmpty(config)) {
-        throwCrudError('config cannot be an empty object');
-    }
+    if (!isObject(config)) throwCrudError('config should be an object');
+
+    if (isEmpty(config)) throwCrudError('config cannot be an empty object');
 
     const { crud, reducersByOperation } = Object.entries(config)
         .reduce((accumulator, [key, configuration]) => {
-            if (!isValidCrudConfigKey(key)) {
-                throwCrudError(`Invalid config key: ${key}`);
-            }
+            if (!isValidCrudConfigKey(key)) throwCrudError(`Invalid config key: ${key}`);
 
             const {
                 stateDefaults = {},
+                sideEffects = {},
                 requestFn,
             } = configuration;
 
-            if (typeof request !== 'function') {
-                throwCrudError(`request for ${key} operation should be a function`);
-            }
+            if (typeof request !== 'function') throwCrudError(`request for ${key} operation should be a function`);
 
-            if (Object.prototype.toString.call(stateDefaults) !== '[object Object]') {
-                throwCrudError(`stateDefaults for ${key} should be an object`);
-            }
+            if (!isObject(stateDefaults)) throwCrudError(`stateDefaults for ${key} should be an object`);
+
+            if (!isObject(sideEffects)) throwCrudError(`sideEffects for ${key} should be an object`);
 
             const {
                 actionCreatorsByType,
@@ -53,7 +47,8 @@ export const getCRUD = (moduleName, config) => {
                 request,
                 selectors,
             } = getProcedure([moduleName, key], requestFn, {
-                stateDefaults
+                stateDefaults,
+                sideEffects,
             });
 
             accumulator.crud[key] = {

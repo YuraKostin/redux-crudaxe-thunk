@@ -18,6 +18,7 @@ import { throwError } from '../throw-error';
 export const getProcedure = (moduleName, request, options = {}) => {
     const {
         stateDefaults = {},
+        sideEffects,
     } = options;
     const throwProcedureError = throwError('getProcedure');
     const moduleNameArray = Array.isArray(moduleName) ? moduleName : [moduleName];
@@ -47,7 +48,7 @@ export const getProcedure = (moduleName, request, options = {}) => {
     return {
         actionCreatorsByType,
         reducer,
-        request: getAsyncAction(moduleNameString, request),
+        request: getAsyncAction(moduleNameString, request, sideEffects),
         selectors,
     };
 };
