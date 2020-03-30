@@ -35,13 +35,13 @@ export const getProcedure = (moduleName, request, options = {}) => {
         throwProcedureError(`stateDefaults should be an object`);
     }
 
-    const actionHandlers = getActionHandlers(moduleNameArray, stateDefaults);
+    const actionHandlers = getActionHandlers(moduleNameString, stateDefaults);
     const initialState = getInitialState(stateDefaults);
     const reducer = getReducer({
         actionHandlersByActionType: actionHandlers,
         initialState,
     });
-    const selectors = getPureSelectorsForModuleState(moduleName, initialState);
+    const selectors = getPureSelectorsForModuleState(moduleNameArray, initialState);
     const actionCreatorsByType = getActionCreatorsByType(moduleNameString);
 
     return {
