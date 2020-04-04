@@ -35,7 +35,7 @@ export const getCRUD = (moduleName, config) => {
                 requestFn,
             } = configuration;
 
-            if (typeof request !== 'function') throwCrudError(`request for ${key} operation should be a function`);
+            if (typeof requestFn !== 'function') throwCrudError(`request for ${key} operation should be a function`);
 
             if (!isObject(stateDefaults)) throwCrudError(`stateDefaults for ${key} should be an object`);
 
@@ -45,6 +45,7 @@ export const getCRUD = (moduleName, config) => {
                 actionCreatorsByType,
                 reducer,
                 request,
+                selectAll,
                 selectors,
             } = getProcedure([moduleName, key], requestFn, {
                 stateDefaults,
@@ -54,6 +55,7 @@ export const getCRUD = (moduleName, config) => {
             accumulator.crud[key] = {
                 actionCreatorsByType,
                 request,
+                selectAll,
                 selectors,
             };
             accumulator.reducersByOperation[key] = reducer;

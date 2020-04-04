@@ -43,12 +43,14 @@ export const getProcedure = (moduleName, request, options = {}) => {
         initialState,
     });
     const selectors = getPureSelectorsForModuleState(moduleNameArray, initialState);
+    const selectAll = path(moduleNameArray);
     const actionCreatorsByType = getActionCreatorsByType(moduleNameString);
 
     return {
         actionCreatorsByType,
         reducer,
         request: getAsyncAction(moduleNameString, request, sideEffects),
+        selectAll,
         selectors,
     };
 };

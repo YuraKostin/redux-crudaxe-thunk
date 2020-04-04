@@ -10,6 +10,7 @@
  * @property {Object} actionCreatorsByType
  * @property {function} reducer
  * @property {function} request
+ * @property {function} selectAll
  * @property {ProcedureSelectors} selectors
  */
 
