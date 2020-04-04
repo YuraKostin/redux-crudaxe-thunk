@@ -32,7 +32,7 @@ export const getCRUD = (moduleName, config) => {
             const {
                 stateDefaults = {},
                 sideEffects = {},
-                requestFn,
+                request: requestFn,
             } = configuration;
 
             if (typeof requestFn !== 'function') throwCrudError(`request for ${key} operation should be a function`);
