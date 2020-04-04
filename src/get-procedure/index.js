@@ -1,4 +1,4 @@
-import { isEmpty } from 'ramda';
+import { isEmpty, path } from 'ramda';
 
 import { getActionCreatorsByType } from '../get-action-creators-by-type';
 import { getActionHandlers } from '../get-action-handlers';
