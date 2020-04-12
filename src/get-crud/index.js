@@ -30,8 +30,9 @@ export const getCRUD = (moduleName, config) => {
             if (!isValidCrudConfigKey(key)) throwCrudError(`Invalid config key: ${key}`);
 
             const {
-                stateDefaults = {},
+                mock,
                 sideEffects = {},
+                stateDefaults = {},
                 request: requestFn,
             } = configuration;
 
@@ -48,8 +49,9 @@ export const getCRUD = (moduleName, config) => {
                 selectAll,
                 selectors,
             } = getProcedure([moduleName, key], requestFn, {
-                stateDefaults,
+                mock,
                 sideEffects,
+                stateDefaults,
             });
 
             accumulator.crud[key] = {
