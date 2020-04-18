@@ -68,8 +68,13 @@ export const getCRUD = (moduleName, config) => {
             reducersByOperation: {},
         });
 
+    const reducer = combineReducers(reducersByOperation);
+
     return {
         ...crud,
-        reducer: combineReducers(reducersByOperation),
+        reducer,
+        init: () => ({
+            [moduleName]: reducer,
+        })
     };
 };

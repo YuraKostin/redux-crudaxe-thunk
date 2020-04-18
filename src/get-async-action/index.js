@@ -24,11 +24,8 @@ const mapMockTypeToState = (type, value) => {
     return Object.assign(emptyState, map[type]);
 };
 
-/**
- * @param {string} type
- * @return {string}
- */
-const mapMockTypeToAction = (moduleName, type, value) => {
+// mapMockTypeToAction :: string -> (string -> any) -> function
+const mapMockTypeToAction = moduleName => (type, value) => {
     const actionTypesByMockType = {
         data: RECEIVE,
         error: ERROR,
@@ -44,6 +41,10 @@ const mapMockTypeToAction = (moduleName, type, value) => {
     return getActionCreator(moduleName, actionName)(value);
 };
 
+const DATA_ACTION = 'data';
+const ERROR_ACTION = 'error';
+const IS_IN_PROCESS_ACTION = 'isInProcess';
+
 /**
  * @param {string} moduleName
  * @param {function} request
@@ -54,6 +55,8 @@ const mapMockTypeToAction = (moduleName, type, value) => {
  * @param {Object} [options.mock]
  * @param {string} options.mock.type
  * @param {any} options.mock.value
+ * @param {Object} [options.mock.emulateLoading]
+ * @param {number} options.mock.emulateLoading.delay
  * @return {function(*=): function(...[*]=)}
  */
 export const getAsyncAction = (moduleName, request, options = {}) => data => async dispatch => {
@@ -68,19 +71,69 @@ export const getAsyncAction = (moduleName, request, options = {}) => data => asy
         const {
             type,
             value,
+            emulateLoading = null,
         } = mock;
 
-        const isNotError = ['data', 'isInProcess'].includes(type);
         const mockState = mapMockTypeToState(type, value);
-        const mockAction = mapMockTypeToAction(moduleName, type, value);
+        const mockAction = mapMockTypeToAction(moduleName);
 
-        dispatch(mockAction);
+        if (type === IS_IN_PROCESS_ACTION) {
+            dispatch(mockAction(IS_IN_PROCESS_ACTION));
+        } else {
+            if (type === DATA_ACTION) {
+                if (emulateLoading) {
+                    dispatch(mockAction(IS_IN_PROCESS_ACTION));
 
-        if (isNotError) {
-            return Promise.resolve(mockState);
+                    return new Promise(resolve => {
+                        setTimeout(() => {
+                            dispatch(mockAction(DATA_ACTION, value));
+
+                            if (typeof sideEffects.data === 'function') {
+                                sideEffects.data(value, dispatch);
+                            }
+
+                            resolve(mockState);
+                        }, emulateLoading.delay);
+                    });
+                }
+
+                dispatch(mockAction(DATA_ACTION, value));
+
+                if (typeof sideEffects.data === 'function') {
+                    sideEffects.data(value, dispatch);
+                }
+
+                return Promise.resolve(mockState);
+            }
+
+            if (type === ERROR_ACTION) {
+                if (emulateLoading) {
+                    dispatch(mockAction(IS_IN_PROCESS_ACTION));
+
+                    return new Promise((_, reject) => {
+                        setTimeout(() => {
+                            dispatch(mockAction(ERROR_ACTION, value));
+
+                            if (typeof sideEffects.error === 'function') {
+                                sideEffects.error(value, dispatch);
+                            }
+
+                            reject(mockState);
+                        }, emulateLoading.delay);
+                    });
+                }
+
+                dispatch(mockAction(ERROR_ACTION, value));
+
+                if (typeof sideEffects.error === 'function') {
+                    sideEffects.error(value, dispatch);
+                }
+
+                return Promise.reject(mockState);
+            }
         }
 
-        return Promise.reject(mockState);
+        return;
     }
 
     // Handle actual request

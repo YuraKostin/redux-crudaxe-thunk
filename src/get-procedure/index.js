@@ -56,5 +56,8 @@ export const getProcedure = (moduleName, request, options = {}) => {
         }),
         selectAll,
         selectors,
+        init: () => ({
+            [moduleName]: reducer,
+        }),
     };
 };
