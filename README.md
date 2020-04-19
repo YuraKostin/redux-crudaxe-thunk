@@ -7,7 +7,7 @@ This library was created for simplify of describing narrow propose Redux(redux-t
 
 #### General way
 
-First, we all split out Redux modules, using this structure^
+First, we all split out Redux modules, using this structure:
 * actions - just strings with actions names
 * action creators - functions, which returns action object
 * reducer - pure function to handle actions
@@ -181,7 +181,7 @@ And add same thing for data selectors:
 ```javascript
 // store/utils/getPureSelectorForModuleState/index.js
 const getPureSelectorForModuleState = moduleName => property => state => {
-
+    // Implementation here...
 };
 
 // store/some-namespace/index.js
@@ -215,18 +215,16 @@ Few steps of thinking and composition later... we finally got
 // store/login/index.js
 import {getProcedure} from 'redux-crudaxe-thunk';
 import login from '@api/public/login'; // API request
-
-export const loginModuleName = 'login';
     
-export const loginProcedure = getProcedure(loginModuleName, login);
+export const loginProcedure = getProcedure('login', login);
 
 
 // store/index.js
-import {loginModuleName, loginProcedure} from '@store/login'; 
+import {loginProcedure} from '@store/login'; 
 
 createStore(
   combineReducers({
-    [loginModuleName]: loginProcedure.reducer,
+    ...loginProcedure.init(),
   })    
 )
 ```
@@ -240,11 +238,9 @@ import {getCRUD} from 'redux-crudaxe-thunk';
 import getUsers from '@api/private/getUser';
 import createUser from '@api/private/createUser';
 import deleteUser from '@api/private/deleteUser'; 
-
-export const userModuleName = 'user';
     
-export const userCRUD = getCRUD(userModuleName, {
-  create: { // Any CRUD option initiates by `getProcedure` function
+export const userCRUD = getCRUD('user', {
+  create: { // Any CRUD option initiates by `getProcedure` function // TODO
     request: createUser,
   },
   delete: {
@@ -257,11 +253,11 @@ export const userCRUD = getCRUD(userModuleName, {
 
 
 // store/index.js
-import {userModulename, userCRUD} from '@store/user';
+import {userCRUD} from '@store/user';
 
 createStore(
   combineReducers({
-    [userModulename]: userCRUD.reducer,
+    ...userCRUD.init(),
   })    
 )
 ```
@@ -281,16 +277,14 @@ Default state of every procedure is:
 }
 ```
 
-So you can provide your onw default state. Every options in `stateDefaults` object is optional
+So you can provide your onw default state. Every options in `stateDefaults` object are optional
 
 ```javascript
 // store/login/index.js
 import {getProcedure} from 'redux-crudaxe-thunk';
 import login from '@api/public/login'; // API request
-
-export const loginModuleName = 'login';
     
-export const loginProcedure = getProcedure(loginModuleName, login, {
+export const loginProcedure = getProcedure('login', login, {
     stateDefaults: {
         data: [],
         error: {},
@@ -307,10 +301,8 @@ You may want always do something on response and error, so:
 // store/login/index.js
 import {getProcedure} from 'redux-crudaxe-thunk';
 import login from '@api/public/login'; // API request
-
-export const loginModuleName = 'login';
     
-export const loginProcedure = getProcedure(loginModuleName, login, {
+export const loginProcedure = getProcedure('login', login, {
     sideEffects: {
         data: (responseData, dispatch) => {
       
@@ -332,13 +324,14 @@ Finally you may mock your response, when your API is not ready, but you have con
 // store/login/index.js
 import {getProcedure} from 'redux-crudaxe-thunk';
 import login from '@api/public/login'; // API request
-
-export const loginModuleName = 'login';
     
-export const loginProcedure = getProcedure(loginModuleName, login, {
+export const loginProcedure = getProcedure('login', login, {
     mock: {
         type: 'data' | 'error' | 'isInProcess', // Use one of these values
-        value: someValue, // `data` and `error` values passes as is, but `isInProcess` will be converted to boolean 
+        value: any, // `data` and `error` values passes as is, but `isInProcess` will be converted to boolean 
+        emulateLoading: { // Optional parameter, which emulates request, setting `isInProcess = true`
+            delay: number
+        } 
     }
 });
 ```
