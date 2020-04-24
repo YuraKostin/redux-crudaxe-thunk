@@ -44,6 +44,7 @@ export const getCRUD = (moduleName, config) => {
 
             const {
                 actionCreatorsByType,
+                actions,
                 reducer,
                 request,
                 selectAll,
@@ -55,7 +56,8 @@ export const getCRUD = (moduleName, config) => {
             });
 
             accumulator.crud[key] = {
-                actionCreatorsByType,
+                actionCreatorsByType, // TODO: Remove in future versions
+                actions,
                 request,
                 selectAll,
                 selectors,

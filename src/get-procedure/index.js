@@ -1,6 +1,6 @@
 import { isEmpty, path } from 'ramda';
 
-import { getActionCreatorsByType } from '../get-action-creators-by-type';
+import {getActionCreatorsByType, getDeprecatedActionCreatorsByType} from '../get-action-creators-by-type';
 import { getActionHandlers } from '../get-action-handlers';
 import { getAsyncAction } from '../get-async-action';
 import { getInitialState } from '../get-initial-state';
@@ -45,10 +45,12 @@ export const getProcedure = (moduleName, request, options = {}) => {
     });
     const selectors = getPureSelectorsForModuleState(moduleNameArray, initialState);
     const selectAll = path(moduleNameArray);
-    const actionCreatorsByType = getActionCreatorsByType(moduleNameString);
+    const actions = getActionCreatorsByType(moduleNameString);
+    const deprecatedActionCreatorsByType = getDeprecatedActionCreatorsByType(moduleNameString);
 
     return {
-        actionCreatorsByType,
+        actionCreatorsByType: deprecatedActionCreatorsByType, // TODO: Remove in future versions
+        actions,
         reducer,
         request: getAsyncAction(moduleNameString, request, {
             sideEffects,
