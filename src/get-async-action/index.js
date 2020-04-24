@@ -2,28 +2,6 @@ import {getActionCreator} from '../get-action-creator';
 import {ERROR, RECEIVE, REQUEST} from '../constants/action-types';
 import {getEmptyState} from '../get-empty-state';
 
-/**
- * @param {string} type
- * @param {any} value
- * @return {any}
- */
-const mapMockTypeToState = (type, value) => {
-    const emptyState = getEmptyState();
-    const map = {
-        data: {
-            date: value,
-        },
-        error: {
-            error: value,
-        },
-        isInProcess: {
-            isInProcess: Boolean(value),
-        },
-    };
-
-    return Object.assign(emptyState, map[type]);
-};
-
 // mapMockTypeToAction :: string -> (string -> any) -> function
 const mapMockTypeToAction = moduleName => (type, value) => {
     const actionTypesByMockType = {
@@ -74,7 +52,6 @@ export const getAsyncAction = (moduleName, request, options = {}) => data => asy
             emulateLoading = null,
         } = mock;
 
-        const mockState = mapMockTypeToState(type, value);
         const mockAction = mapMockTypeToAction(moduleName);
 
         if (type === IS_IN_PROCESS_ACTION) {
@@ -92,7 +69,7 @@ export const getAsyncAction = (moduleName, request, options = {}) => data => asy
                                 sideEffects.data(value, dispatch);
                             }
 
-                            resolve(mockState);
+                            resolve(value);
                         }, emulateLoading.delay);
                     });
                 }
@@ -103,7 +80,7 @@ export const getAsyncAction = (moduleName, request, options = {}) => data => asy
                     sideEffects.data(value, dispatch);
                 }
 
-                return Promise.resolve(mockState);
+                return Promise.resolve(value);
             }
 
             if (type === ERROR_ACTION) {
@@ -118,7 +95,7 @@ export const getAsyncAction = (moduleName, request, options = {}) => data => asy
                                 sideEffects.error(value, dispatch);
                             }
 
-                            reject(mockState);
+                            reject(value);
                         }, emulateLoading.delay);
                     });
                 }
@@ -129,7 +106,7 @@ export const getAsyncAction = (moduleName, request, options = {}) => data => asy
                     sideEffects.error(value, dispatch);
                 }
 
-                return Promise.reject(mockState);
+                return Promise.reject(value);
             }
         }
 
