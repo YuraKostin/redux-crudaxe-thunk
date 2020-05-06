@@ -1,12 +1,13 @@
-import { isEmpty, path } from 'ramda';
+import {isEmpty, path} from 'ramda';
 
 import {getActionCreatorsByType, getDeprecatedActionCreatorsByType} from '../get-action-creators-by-type';
-import { getActionHandlers } from '../get-action-handlers';
-import { getAsyncAction } from '../get-async-action';
-import { getInitialState } from '../get-initial-state';
-import { getPureSelectorsForModuleState } from '../get-pure-selectors-for-module-state';
-import { getReducer } from '../get-reducer';
-import { throwError } from '../throw-error';
+import {getActionHandlers} from '../get-action-handlers';
+import {getAsyncAction} from '../get-async-action';
+import {getInitialState} from '../get-initial-state';
+import {getPureSelectorsForModuleState} from '../get-pure-selectors-for-module-state';
+import {getReducer} from '../get-reducer';
+import {throwError} from '../throw-error';
+import {getAsyncMockAction} from '../get-async-mock-action';
 
 /**
  * @param {string|Array<string>} moduleName
@@ -48,14 +49,19 @@ export const getProcedure = (moduleName, request, options = {}) => {
     const actions = getActionCreatorsByType(moduleNameString);
     const deprecatedActionCreatorsByType = getDeprecatedActionCreatorsByType(moduleNameString);
 
+    const asyncAction = mock ?
+        getAsyncMockAction(moduleNameString, request, mock, {
+            sideEffects,
+        }) :
+        getAsyncAction(moduleNameString, request, {
+            sideEffects,
+        });
+
     return {
         actionCreatorsByType: deprecatedActionCreatorsByType, // TODO: Remove in future versions
         actions,
         reducer,
-        request: getAsyncAction(moduleNameString, request, {
-            sideEffects,
-            mock,
-        }),
+        request: asyncAction,
         selectAll,
         selectors,
         init: () => ({

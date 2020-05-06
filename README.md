@@ -187,11 +187,11 @@ const getPureSelectorForModuleState = moduleName => property => state => {
 // store/some-namespace/index.js
 const moduleName = 'some-namespace';
 
-const geSelectorFor = getPureSelectorForModuleState(moduleName);
+const getSelectorFor = getPureSelectorForModuleState(moduleName);
 
-export const selectError = geSelectorFor('error');
-export const selectData = geSelectorFor('data');
-export const selectIsInProcess = geSelectorFor('isInProcess');
+export const selectError = getSelectorFor('error');
+export const selectData = getSelectorFor('data');
+export const selectIsInProcess = getSelectorFor('isInProcess');
 ```
 
 Now in your component you may do this:
@@ -229,6 +229,19 @@ createStore(
 )
 ```
 
+##### `getProcedure` output signature
+* `actionCreatorsByType` - object that contains action creators by name (ERROR, RECEIVE, REQUEST, RESET). 
+DEPRECATED, use `actions` instead
+* `actions` - object that contains action creators by name (ERROR, RECEIVE, REQUEST, RESET)
+* `init` - function which you use while adding the procedure in store reducers list
+* `reducer` - reducer function
+* `request` - async action creator, which you may dispatch to produce http request
+* `selectAll` - function for `useSelector` hook; `useSelector(procedureName.selectAll)` 
+returns full procedure state, object with fields `data, error, isInProcess`
+* `selectors` - object, that contains functions by names `data`, `error`, `isInProcess`, 
+that may be used for `useSelector` like this: `useSelector(procedureName.selectors.data)`
+
+
 #### `getCRUD`
 
 ```javascript
@@ -240,7 +253,7 @@ import createUser from '@api/private/createUser';
 import deleteUser from '@api/private/deleteUser'; 
     
 export const userCRUD = getCRUD('user', {
-  create: { // Any CRUD option initiates by `getProcedure` function // TODO
+  create: { // Any CRUD option initiates by `getProcedure` function
     request: createUser,
   },
   delete: {
@@ -261,8 +274,6 @@ createStore(
   })    
 )
 ```
-
-> I know that it's not the best way to add reducer, but i'll change it some time.
 
 #### Extra options
 
@@ -318,7 +329,7 @@ export const loginProcedure = getProcedure('login', login, {
 
 ##### mock
 
-Finally you may mock your response, when your API is not ready, but you have contract already.
+Finally you may mock your response, when your API is not ready, but you already have a contract.
 
 ```javascript
 // store/login/index.js
@@ -335,6 +346,32 @@ export const loginProcedure = getProcedure('login', login, {
     }
 });
 ```
+
+##### Side effects in components
+When you use `dispatch(procedureName.request())`, you may possibly want to do redirect,
+or any other action, when request will return the data or error.
+
+To do this, you should include function `handleResponse` from the library:
+```javascript
+// Some component
+import {handleResponse} from 'redux-crudaxe-thunk';
+
+// Somewhere in component
+dispatch(procedureName.request(someData))
+    .then(handleResponse
+        ({data}) => console.log(data), 
+        ({error}) => console.log(error) 
+    );
+```
+
+`handleResponse` accepts three functions:
+* onResult
+* onError
+* handleDefault
+
+All of the functions are optional. So, if you only want to handle an error, you may
+pass an `identity` function as first argument
+
 
 #### Usage in component
 
@@ -388,4 +425,4 @@ export const LoginForm = () => {
 };
 ```
 
-> Procedure request accepts only one argument, so you need to pass all values you want using object
+> Procedure request accepts only one argument, so you need to pass all values you want, using just one object
