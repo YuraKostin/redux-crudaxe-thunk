@@ -1,6 +1,6 @@
 {
   "name": "redux-crudaxe-thunk",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "Helpers for describing redux modules",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
