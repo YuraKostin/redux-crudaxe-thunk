@@ -8,7 +8,7 @@
     "build:procedure": "parcel build src/get-procedure/index.js --out-dir dist --out-file get-procedure.js",
     "build": "parcel build src/index.js --out-dir dist --out-file crudaxe.js --no-cache"
   },
-  "main": "dist/crudaxe.js",
+  "main": "./src/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/YuraKostin/redux-crudaxe-thunk.git"

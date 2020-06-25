@@ -358,15 +358,15 @@ import {handleResponse} from 'redux-crudaxe-thunk';
 
 // Somewhere in component
 dispatch(procedureName.request(someData))
-    .then(handleResponse
+    .then(handleResponse(
         ({data}) => console.log(data), 
         ({error}) => console.log(error) 
-    );
+    ));
 ```
 
 `handleResponse` accepts three functions:
-* onResult
-* onError
+* handleSuccess
+* handleError
 * handleDefault
 
 All of the functions are optional. So, if you only want to handle an error, you may

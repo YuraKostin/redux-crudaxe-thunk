@@ -15,18 +15,26 @@ const isFullfiledObjectByProp = curryN(2, compose(
     prop,
 ));
 
+const getValueByHandler = curryN(2, (fn, dataProp) => fn === identity ?
+    identity :
+    compose(
+        fn,
+        prop(dataProp),
+    ),
+);
+
 /**
- * @param {function} [onResult]
- * @param {function} [onError]
+ * @param {function} [handleSuccess]
+ * @param {function} [handleError]
  * @param {function} [handleDefault]
  * @return {any}
  */
 export const handleResponse = (
-    onResult = identity,
-    onError = identity,
-    handleDefault = identity
+    handleSuccess = identity,
+    handleError = identity,
+    handleDefault = identity,
 ) => cond([
-    [isFullfiledObjectByProp('data'), onResult],
-    [isFullfiledObjectByProp('error'), onError],
+    [isFullfiledObjectByProp('data'), getValueByHandler(handleSuccess, 'data')],
+    [isFullfiledObjectByProp('error'), getValueByHandler(handleError, 'error')],
     [T, handleDefault],
 ]);

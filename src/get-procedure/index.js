@@ -21,6 +21,7 @@ export const getProcedure = (moduleName, request, options = {}) => {
         mock,
         sideEffects,
         stateDefaults = {},
+        isPersistState = false,
     } = options;
     const throwProcedureError = throwError('getProcedure');
     const moduleNameArray = Array.isArray(moduleName) ? moduleName : [moduleName];
@@ -38,7 +39,7 @@ export const getProcedure = (moduleName, request, options = {}) => {
         throwProcedureError(`stateDefaults should be an object`);
     }
 
-    const actionHandlers = getActionHandlers(moduleNameString, stateDefaults);
+    const actionHandlers = getActionHandlers(moduleNameString, stateDefaults, {isPersistState});
     const initialState = getInitialState(stateDefaults);
     const reducer = getReducer({
         actionHandlersByActionType: actionHandlers,

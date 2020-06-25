@@ -1,8 +1,6 @@
 // Action handlers
-export const getValueByKeyOrDefault = object => valueKey => defaultValue => {
-    if (Object.prototype.hasOwnProperty.call(object, valueKey)) {
-        return object[valueKey];
-    }
+export const getValueByKeyOrDefault = stateDefaults => valueKey => object => {
+    const safeObject = object || stateDefaults || {};
 
-    return defaultValue;
+    return safeObject[valueKey];
 };
